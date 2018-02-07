@@ -8,7 +8,7 @@ PKD  = $(abspath $(dir $(MAKEFILE_LIST)))
 PKG  = drake
 DATE = $(shell date +%Y%m%d)
 HASH = $(shell git ls-remote $(UURL) $(UURL_BRANCH) | cut -c 1-6)
-LATEST_VER ?= $(shell dpkg-parsechangelog -l debian/changelog | grep Version | sed -n 's/.* \([0-9]\.[0-9]\.[0-9]\)\+.*/\1/p')
+LATEST_VER ?= $(shell dpkg-parsechangelog -l debian/changelog | grep Version | sed -n 's/.* \([0-9]\+\.[0-9]\+\.[0-9]\+\)\+.*/\1/p')
 VER = $(LATEST_VER)+$(DATE)r$(HASH)
 
 .PHONY: get-orig-source \
@@ -24,7 +24,7 @@ get-orig-source: $(PKG)_$(VER).orig.tar.xz $(info I: $(PKG)_$(VER))
 $(PKG)_$(VER).orig.tar.xz:
 	$(if $(wildcard $(PKG)-$(VER)),$(error $(PKG)-$(VER) exist, aborting..))
 	@echo "# Downloading ${PKG} repo ..."
-	git clone -q $(UURL) $(PKG)-$(VER) \
+	git clone $(UURL) $(PKG)-$(VER) \
 	|| $(RM) -r $(PKG)-$(VER)
 	cd $(PKG)-$(VER) \
 	&& git checkout master \
